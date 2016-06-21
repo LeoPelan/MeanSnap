@@ -1,0 +1,10 @@
+{
+  "name": "socket-snapshot",
+  "version": "0.0.1",
+  "description": "web socket-snapshot",
+  "dependencies": {
+    "express": "^4.10.2",
+    "screenshot-stream": "^3.4.0",
+    "socket.io": "^1.4.6"
+  }
+}

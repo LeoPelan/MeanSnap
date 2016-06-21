@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Snapshot</title>
+  </head>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+
+  <body>
+    <form id="submitForm">
+     <input id="m" autocomplete="off" /><button>Send</button>
+   </form>
+
+   <img src="./public/test.png">
+
+   <script>
+
+   $(document).ready(function () {
+     var socket = io();
+
+     $( "#submitForm" ).submit(function( event ) {
+         event.preventDefault();
+         socket.emit('Snapshot from ', $('#m').val());
+         $.get( "http://localhost:3000/screen/?url="+$('#m').val())
+           .done(function( data ) {
+             alert( "Data Loaded: " + data );
+           });
+       });
+
+});
+
+
+   </script>
+  </body>
+</html>
