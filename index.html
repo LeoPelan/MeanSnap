@@ -11,7 +11,7 @@
      <input id="m" autocomplete="off" /><button>Send</button>
    </form>
 
-   <img src="./public/test.png">
+   <img id="image" src="./public/test.png">
 
    <script>
 
@@ -23,7 +23,8 @@
          socket.emit('Snapshot from ', $('#m').val());
          $.get( "http://localhost:3000/screen/?url="+$('#m').val())
            .done(function( data ) {
-             alert( "Data Loaded: " + data );
+            d = new Date();
+            $("#image").attr("src", "/public/test.png?timestamp=" + new Date().getTime());
            });
        });
 

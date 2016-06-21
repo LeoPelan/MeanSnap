@@ -14,7 +14,7 @@ app.get('/screen', function(req, res){
   var site = req.query.url;
   const stream = screenshot(site, '1024x768', {crop: true});
 
-stream.pipe(fs.createWriteStream('test.png'));
+stream.pipe(fs.createWriteStream(__dirname  + '/public/test.png'));
 res.sendStatus(200)
 });
 
