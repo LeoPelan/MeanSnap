@@ -2,7 +2,11 @@ import { Injectable }    from '@angular/core';
 import { Headers, Http } from '@angular/http';
 import 'rxjs/add/operator/toPromise';
 import {Snap} from "./Snap/snap";
+import { Subject } from 'rxjs/Subject';
+import { Observable } from 'rxjs/Observable';
+import * as io from 'socket.io-client';
 
+""
 @Injectable()
 export class AppService {
     private appUrl = 'http://localhost:1401/';  // URL to web api
