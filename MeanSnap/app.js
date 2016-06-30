@@ -2,9 +2,12 @@ var express = require('express');
 var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+var phantom = require('phantom');
 const fs = require('fs');
 const screenshot = require('screenshot-stream');
+
 app.use("/public", express.static(__dirname + "/public"));
+
 
 app.use(function (req, res, next) {
 
@@ -28,18 +31,33 @@ app.use(function (req, res, next) {
 var i = 0;
 
 app.get('/snap', function(req, res){
-console.log(req.query.url == 'http://')
   if(req.query.url == 'http://' || req.query.url == undefined ){
       res.send(getSnaps())
   }else{
      var site = req.query.url;
 
-     const stream = screenshot(site, '1024x768', {crop: true});
      var files = fs.readdirSync(__dirname + '/public/img/').length;
 
-     stream.pipe(fs.createWriteStream(__dirname + '/public/img/test-'+files+'.png'));
+      phantom.create().then(function(ph) {
+          ph.createPage().then(function(page) {
+              page.property('viewportSize', {width: 1920, height: 1080}).then(function() {
+                  page.open(site).then(function(status) {
+                      page.renderBase64('PNG').then(function(data) {
+                          var imgData = 'data:image/png;base64,'+data;
 
-     res.send(getSnaps())
+                          var data = imgData.replace(/^data:image\/\w+;base64,/, "");
+                          var buf = new Buffer(data, 'base64');
+                          fs.writeFile(__dirname + '/public/img/test-'+files+'.png', buf, (err) => {
+                              if (err) throw err;
+                              io.emit('message', 'imageSaved');
+                              res.send(getSnaps())
+                          });
+                          ph.exit();
+                      });
+                  });
+              });
+          });
+      });
   }
 
 
@@ -48,7 +66,6 @@ console.log(req.query.url == 'http://')
 app.get('/', function(req, res){
   var snaps = getSnaps()
   res.send(snaps);
-
 });
 
 function getSnaps() {
@@ -56,22 +73,15 @@ function getSnaps() {
     var snaps = [];
 
     for(var i in files){
+        if(files[i] != 'index.html')
         snaps.push({id: i, image: files[i]})
     }
 
     return snaps
 }
 
-io.on('connection', (socket) => {
-    console.log('user connected');
-
-    socket.on('disconnect', function(){
-        console.log('user disconnected');
-    });
-
-    socket.on('add-message', (message) => {
-        io.emit('message', {type:'new-message', text: message});
-    });
+io.on('connection', function(socket) {
+    console.log('User Connected');
 });
 
 
