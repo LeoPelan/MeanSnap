@@ -4,7 +4,6 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var phantom = require('phantom');
 const fs = require('fs');
-const screenshot = require('screenshot-stream');
 
 app.use("/public", express.static(__dirname + "/public"));
 
@@ -35,7 +34,6 @@ app.get('/snap', function(req, res){
       res.send(getSnaps())
   }else{
      var site = req.query.url;
-
      var files = fs.readdirSync(__dirname + '/public/img/').length;
 
       phantom.create().then(function(ph) {
